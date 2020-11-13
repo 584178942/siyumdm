@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.siyu.mdm.custom.device">
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.SET_WALLPAPER" />
+    <uses-permission android:name="com.vivo.custom.permission.PLUG_IN" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_CALL_LOG"/>
+    <uses-permission android:name="android.permission.READ_CALL_LOG" />
+    <application
+        android:allowBackup="true"
+        android:usesCleartextTraffic="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        android:name=".SGTApplication">
+        <activity
+            android:name=".activity.BindActivity"
+            android:directBootAware="true"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:theme="@style/CustomizedFullScreen">
+            <meta-data
+                android:name="hw.gesture_nav_options"
+                android:value="13107200"></meta-data>
+        </activity>
+
+        <activity
+            android:name=".activity.LockActivity"
+            android:directBootAware="true"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:theme="@style/CustomizedFullScreen">
+           <!-- <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>-->
+            <meta-data
+                android:name="hw.gesture_nav_options"
+                android:value="13107200"></meta-data>
+        </activity>
+        <activity
+            android:name=".activity.MainActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <receiver
+            android:name=".receiver.BootBroadcastReceiver"
+            android:directBootAware="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".receiver.ScreenStatusReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.SCREEN_OFF" />
+                <action android:name="android.intent.action.SCREEN_ON" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".receiver.PollAlarmReceiver"
+            android:directBootAware="true"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.sgt.security.terminal.receiver.AarmReceiver" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".receiver.HeartBeatReceiver"
+            android:directBootAware="true"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="HeartBeatReceiver" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".receiver.StartLockReceiver"
+            android:directBootAware="true"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="StartLockReceiver" />
+            </intent-filter>
+        </receiver>
+    </application>
+
+</manifest>
