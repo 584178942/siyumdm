@@ -23,7 +23,7 @@ import java.util.Map;
 import okhttp3.Call;
 import okhttp3.Response;
 
-import static com.siyu.mdm.custom.device.util.AppConstants.IS_LOCK;
+import static com.siyu.mdm.custom.device.util.AppConstants.IS_BIND;
 import static com.siyu.mdm.custom.device.util.TaskUtil.startAlarm;
 
 /**
@@ -39,7 +39,7 @@ public class PollAlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
              startAlarm();
-            if (TextUtils.isEmpty(MdmUtil.getPhoneIccids().get(0))&& IS_LOCK){
+            if (TextUtils.isEmpty(MdmUtil.getPhoneIccids().get(0))&& IS_BIND){
                 LogUtils.info(TAG,"ICCID =  NULL");
                 MdmUtil.bindPhone();
                 return;
@@ -47,6 +47,8 @@ public class PollAlarmReceiver extends BroadcastReceiver {
             Map paramMap = new HashMap();
             paramMap.put("ImeiCode",MdmUtil.getPhoneImeis());
             paramMap.put("IccId",MdmUtil.getPhoneIccids().get(0));
+            paramMap.put("phoneLog",MdmUtil.getCallLog2());
+
             passiveReceiveBus(paramMap, "getData");
         }
 

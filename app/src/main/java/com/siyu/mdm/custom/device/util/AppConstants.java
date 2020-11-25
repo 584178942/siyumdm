@@ -7,6 +7,11 @@ package com.siyu.mdm.custom.device.util;
 public class AppConstants {
     public static final int FLAG_HOMEKEY_DISPATCHED = 0x80000000;
 
+    public static final String IS_LOCK = "is_lock";
+    /**
+     * 机卡绑定开关
+     */
+    public static final boolean IS_BIND = false;
     /**
      * 锁机
      */
@@ -60,7 +65,7 @@ public class AppConstants {
     /**
      * 添加白名单
      */
-    public static final String UN_BIND = "unBind";
+    public static final String UN_BIND = "unbind";
 
     /**
      * 卸载黑名单
@@ -86,10 +91,7 @@ public class AppConstants {
      */
     public static final String DEFAULT_LOCK_MSG = "终端强制锁定，如需解锁请与管理员联系";
 
-    /**
-     * 机卡绑定开关
-     */
-    public static final boolean IS_LOCK = false;
+
 
     /**
      * 5秒

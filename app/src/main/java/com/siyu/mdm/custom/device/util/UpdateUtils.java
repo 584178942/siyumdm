@@ -2,6 +2,7 @@ package com.siyu.mdm.custom.device.util;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.text.TextUtils;
 import com.google.gson.Gson;
 import com.siyu.mdm.custom.device.SGTApplication;
@@ -77,12 +78,14 @@ public class UpdateUtils {
 
     public static String getLocalFile(String pkg) {
         File file;
-        /*if (Build.VERSION.RELEASE < 21) {
+        // LogUtils.info(TAG, "build.version.release " + Build.VERSION.RELEASE);
+       /* if (Integer.parseInt(Build.VERSION.RELEASE) < 21) {
             file = SGTApplication.getContextApp().getApplicationContext().getExternalFilesDir("download");
         } else {
             file = SGTApplication.getContextApp().getApplicationContext().getCacheDir();
         }*/
-        file = new File("/sdcard/Android/data/sy");//SGTApplication.getContextApp().getApplicationContext().getCacheDir();
+       // LogUtils.info("file：",file.getPath());
+        file = new File("/sdcard/Android/data/sy");// SGTApplication.getContextApp().getApplicationContext().getCacheDir();//new File("/sdcard/Android/data/sy");
         if (file == null || file.exists() || file.mkdirs()) {
             File file2 = new File(file, pkg + ".apk");
             try {
@@ -115,7 +118,6 @@ public class UpdateUtils {
             NetUtils.getInstance().downloadFile(httpUrl, localFile, new NetUtils.MyNetCall() {
                 @Override
                 public void success(Call call, Response response) {
-
                     File file = new File(localFile);
 
                     InputStream inputStream = null;
@@ -151,11 +153,6 @@ public class UpdateUtils {
                             inputStream = null;
                             outputStream = null;
                         }
-                    }
-                    if(pkg.equals(SGTApplication.getContextApp().getPackageName())){
-
-
-                        return;
                     }
                     MdmUtil.installPackage(file.getPath(),pkg);
                 }
@@ -279,7 +276,7 @@ public class UpdateUtils {
         LogUtils.info(TAG, "version code from server = " + str);
         String[] split = str.split("\\.");
         String[] split2 = getVerName().split("\\.");
-        if (split.length == 4 && split2.length == 4) {
+        if (split.length == 3 && split2.length == 3) {
             try {
                 if (Integer.parseInt(split[0]) != Integer.parseInt(split2[0])) {
                     LogUtils.info(TAG, "version code first index not match, should not cross upgrade");
@@ -288,11 +285,9 @@ public class UpdateUtils {
                     LogUtils.info(TAG, "version code second index not match, should not cross upgrade");
                     return false;
                 } else {
-                    for (int i = 2; i < 4; i++) {
-                        if (Integer.parseInt(split[i]) > Integer.parseInt(split2[i])) {
-                            LogUtils.info(TAG, "server version is larger than local, should upgrade");
-                            return true;
-                        }
+                    if (Integer.parseInt(split[2]) > Integer.parseInt(split2[2])) {
+                        LogUtils.info(TAG, "server version is larger than local, should upgrade");
+                        return true;
                     }
                     return false;
                 }
@@ -305,7 +300,6 @@ public class UpdateUtils {
         }
         return false;
     }
-
 }
 
 

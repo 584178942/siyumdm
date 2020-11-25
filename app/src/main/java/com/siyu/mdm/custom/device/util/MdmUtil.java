@@ -4,6 +4,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.CallLog;
 
+import com.google.gson.Gson;
 import com.siyu.mdm.custom.device.SGTApplication;
 import com.vivo.customized.support.DriverImpl;
 import com.vivo.customized.support.inter.VivoApplicationControl;
@@ -18,7 +19,9 @@ import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.siyu.mdm.custom.device.util.AppConstants.UNINSTALL_PATTERN;
 
@@ -68,14 +71,13 @@ public class MdmUtil {
     /**
      * 获取通话时长
      */
-    public static void getCallLog2() {
+    public static String getCallLog2() {
+        List<Map<String,Object>> list = new ArrayList<>();
+        Map<String,Object> map;
         Cursor cursor = SGTApplication.getContextApp().getApplicationContext().getContentResolver().query(CallLog.Calls.CONTENT_URI,
                 columns, null, null, CallLog.Calls.DEFAULT_SORT_ORDER);
-//            if (cursor.moveToFirst()) {
-//                String call_time = cursor.getString(2);
-//                LogUtils.info(null, "call time = " + call_time);
-//            }
         while (cursor.moveToNext()) {
+            map = new HashMap<>();
             String name = cursor.getString(cursor.getColumnIndex(CallLog.Calls.CACHED_NAME));  //姓名
             String number = cursor.getString(cursor.getColumnIndex(CallLog.Calls.NUMBER));  //号码
             long dateLong = cursor.getLong(cursor.getColumnIndex(CallLog.Calls.DATE)); //获取通话日期
@@ -85,11 +87,15 @@ public class MdmUtil {
             int type = cursor.getInt(cursor.getColumnIndex(CallLog.Calls.TYPE)); //获取通话类型：1.呼入2.呼出3.未接
             String dayCurrent = new SimpleDateFormat("dd").format(new Date());
             String dayRecord = new SimpleDateFormat("dd").format(new Date(dateLong));
-
-            LogUtils.info(TAG,"Call log: name: " + name +"phone number: " + number  + "duration " +duration);
-
+            map.put("number",number);
+            map.put("duration",duration);
+            map.put("date",date);
+            map.put("type",type);
+            list.add(map);
+            LogUtils.info(TAG,"Call log: name: " + name +"phone number: " + number  + "duration " +duration + "date:" + date + "type:" + type);
         }
-
+        LogUtils.info(TAG,new Gson().toJson(list,List.class));
+        return new Gson().toJson(list,List.class);
     }
 
     /**
@@ -118,12 +124,9 @@ public class MdmUtil {
     /**
      * 锁机
      */
-    /**
-     * 机卡绑定
-     */
     public static void lockPhone(){
         int i = 0;
-        vivoTelecomControl.setTelephonyPhoneState(i,i,i);
+        vivoTelecomControl.setTelephonyPhoneState(i,1,i);
         vivoTelecomControl.setTelephonySmsState(i,i,i);
         vivoOperationControl.setBackKeyEventState(i);
         vivoOperationControl.setMenuKeyEventState(i);
@@ -150,7 +153,6 @@ public class MdmUtil {
 
         TaskUtil.closeLockActivity();
     }
-
 
     /**
      * 添加安装应用白名单
@@ -201,14 +203,12 @@ public class MdmUtil {
      * 获取IccId
      */
     public static List<String> getPhoneIccids(){
-        // LogUtils.info(TAG,"getPhoneIccids" + vivoDeviceInfoControl.getPhoneIccids().toString());
         return vivoDeviceInfoControl.getPhoneIccids();
     }
     /**
-     * 获取CCID
+     * 获取imei
      */
     public static String getPhoneImeis(){
-        // LogUtils.info(TAG,"getPhoneImeis" + vivoDeviceInfoControl.getPhoneImeis().toString());
         return vivoDeviceInfoControl.getPhoneImeis().get(0);
     }
     /**
@@ -219,7 +219,7 @@ public class MdmUtil {
             @Override
             public void onPackageInstalled(String basePackageName, int returnCode, String msg, Bundle extras) {
                 super.onPackageInstalled(basePackageName, returnCode, msg, extras);
-                LogUtils.info("",basePackageName +returnCode +msg);
+                LogUtils.info("",basePackageName + returnCode +msg);
             }
         });
     }

@@ -177,13 +177,13 @@ public class MainActivity extends AppCompatActivity {
                 ActivityCompat.requestPermissions(this, new String[]
                         {Manifest.permission.READ_CALL_LOG//通话记录
                         }, 1005);
-                MdmUtil.getCallLog();
+                MdmUtil. getCallLog2();
             } else {//手机为Android6.0的版本,权限已授权可以使用
                 // 执行下一步
-                MdmUtil.getCallLog();
+                MdmUtil. getCallLog2();
             }
         } else {//手机为Android6.0以前的版本，可以使用
-            MdmUtil.getCallLog();
+            MdmUtil. getCallLog2();
         }
     }
     @Override

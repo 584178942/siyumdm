@@ -93,6 +93,7 @@ public class TaskUtil {
      */
     public static void closeLockActivity(){
         if (getLockActivity() != null){
+            TaskUtil.cancelLockReceiver();
             getLockActivity().finish();
         }
     }
@@ -190,6 +191,19 @@ public class TaskUtil {
             alarmManager.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + countAlarmMillis, broadcast);
         }
     }
+    @SuppressLint("WrongConstant")
+    public static void cancelLockReceiver() {
+        LogUtils.info(TAG,"cancelLockReceiver");
+        Intent intent = new Intent();
+        Context applicationContext = contextApp.getApplicationContext();
+        intent.setComponent(new ComponentName(applicationContext.getPackageName(), StartLockReceiver.class.getName()));
+        PendingIntent broadcast = PendingIntent.getBroadcast(applicationContext, 888, intent, 268435456);
+        AlarmManager alarmManager = (AlarmManager) applicationContext.getSystemService(NotificationCompat.CATEGORY_ALARM);
+        if (alarmManager != null) {
+            alarmManager.cancel(broadcast);
+        }
+    }
+
 
     /**
      * 当前页面是否在最上层

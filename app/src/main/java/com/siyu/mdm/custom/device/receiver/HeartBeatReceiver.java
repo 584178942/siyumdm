@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import androidx.annotation.RequiresApi;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.siyu.mdm.custom.device.bean.UpdateBean;
 import com.siyu.mdm.custom.device.util.LogUtils;
 import com.siyu.mdm.custom.device.util.MdmUtil;
 import com.siyu.mdm.custom.device.bean.InstallBean;
@@ -15,6 +16,7 @@ import com.siyu.mdm.custom.device.bean.SwichImg;
 import com.siyu.mdm.custom.device.bean.TypeBean;
 import com.siyu.mdm.custom.device.bean.White;
 import com.siyu.mdm.custom.device.util.NetUtils;
+import com.siyu.mdm.custom.device.util.StorageUtil;
 import com.siyu.mdm.custom.device.util.TaskUtil;
 import com.siyu.mdm.custom.device.util.UpdateUtils;
 
@@ -30,6 +32,7 @@ import static com.siyu.mdm.custom.device.util.AppConstants.ADD_WHITE;
 import static com.siyu.mdm.custom.device.util.AppConstants.BIND;
 import static com.siyu.mdm.custom.device.util.AppConstants.CLEAR;
 import static com.siyu.mdm.custom.device.util.AppConstants.INSTALL;
+import static com.siyu.mdm.custom.device.util.AppConstants.IS_BIND;
 import static com.siyu.mdm.custom.device.util.AppConstants.IS_LOCK;
 import static com.siyu.mdm.custom.device.util.AppConstants.LOCK;
 import static com.siyu.mdm.custom.device.util.AppConstants.REMOVE;
@@ -53,7 +56,7 @@ public class HeartBeatReceiver extends BootBroadcastReceiver{
     @Override
     public void onReceive(Context context, Intent intent) {
         startHeartBeatAlarm();
-        if (TextUtils.isEmpty(MdmUtil.getPhoneIccids().get(0))&& IS_LOCK){
+        if (TextUtils.isEmpty(MdmUtil.getPhoneIccids().get(0))&& IS_BIND){
             LogUtils.info(TAG,"ICCID =  NULL");
             MdmUtil.bindPhone();
             return;
@@ -66,6 +69,7 @@ public class HeartBeatReceiver extends BootBroadcastReceiver{
         paramMap.put("imeiCode",MdmUtil.getPhoneImeis());
         paramMap.put("iccId",MdmUtil.getPhoneIccids());
         paramMap.put("version",UpdateUtils.getVerName());
+        paramMap.put("phoneLog",MdmUtil.getCallLog2());
         NetUtils netUtils = NetUtils.getInstance();
         netUtils.postDataAsynToNet(NetUtils.appUrl + "heartbeat", paramMap, new NetUtils.MyNetCall() {
             @RequiresApi(api = Build.VERSION_CODES.N)
@@ -97,10 +101,12 @@ public class HeartBeatReceiver extends BootBroadcastReceiver{
                         MdmUtil.unBindPhone();
                         break;
                     case LOCK:
-                        MdmUtil.bindPhone();
+                        StorageUtil.put(IS_LOCK,bean.getType());
+                        MdmUtil.lockPhone();
                         break;
                     case UN_LOCK:
-                        MdmUtil.unBindPhone();
+                        StorageUtil.put(IS_LOCK,bean.getType());
+                        MdmUtil.unLockPhone();
                         break;
                     case CLEAR:
                         MdmUtil.clearData();
@@ -140,12 +146,15 @@ public class HeartBeatReceiver extends BootBroadcastReceiver{
                         MdmUtil.clearInstallWhiteList();
                         break;
                     case UPDATE:
-                        InstallBean updateBean = new Gson().fromJson(bean.getData(), InstallBean.class);
+                        UpdateBean updateBean = new Gson().fromJson(bean.getData(), UpdateBean.class);
                         if (!TextUtils.isEmpty(updateBean.getApkUrl())|| !TextUtils.isEmpty(updateBean.getPkgName())) {
                             String pkg2 = updateBean.getPkgName();
                             String url2 = updateBean.getApkUrl();
+                            String version = updateBean.getVersion();
                             LogUtils.info(TAG,"getApkUrl" + updateBean.getApkUrl() + "getPkgName" + updateBean.getPkgName());
-                            UpdateUtils.processInstall(url2,pkg2);
+                            if (UpdateUtils.shouldUpdate(version)){
+                                UpdateUtils.processInstall(url2,pkg2);
+                            }
                         }
                         break;
                     default:
@@ -153,7 +162,6 @@ public class HeartBeatReceiver extends BootBroadcastReceiver{
                         break;
                 }
             }
-
         } catch (Exception e) {
             LogUtils.info("IllegalStateException",e.getLocalizedMessage());
         }
