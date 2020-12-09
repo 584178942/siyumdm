@@ -26,7 +26,7 @@ import okhttp3.Response;
  */
 public class NetUtils {
     private static final String TAG = "NetUtils";
-    public static String appUrl = SGTApplication.getContextApp().getString(R.string.api_url);
+    public static String appUrl = SGTApplication.getContextApp().getString(R.string.api_urlTest);
     private static final byte[] LOCKER = new byte[0];
     private static NetUtils mInstance;
     private OkHttpClient mOkHttpClient;

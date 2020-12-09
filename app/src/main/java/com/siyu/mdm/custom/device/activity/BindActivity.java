@@ -27,7 +27,7 @@ public class BindActivity extends Activity {
         lockMsg = "机卡绑定页面";// StorageUtil.get(LOCK_MSG,DEFAULT_LOCK_MSG).toString();
         TextView lockTV = findViewById(R.id.lock_TV);
         LogUtils.info(TAG,lockMsg);
-        lockTV.setText(lockMsg);
+     //   lockTV.setText(lockMsg);
         bindActivity = this;
     }
     public static BindActivity getBindActivity() {

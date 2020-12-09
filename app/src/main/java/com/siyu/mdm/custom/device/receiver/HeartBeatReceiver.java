@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import androidx.annotation.RequiresApi;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.siyu.mdm.custom.device.SGTApplication;
 import com.siyu.mdm.custom.device.bean.UpdateBean;
 import com.siyu.mdm.custom.device.util.LogUtils;
 import com.siyu.mdm.custom.device.util.MdmUtil;
@@ -30,6 +31,7 @@ import okhttp3.Response;
 
 import static com.siyu.mdm.custom.device.util.AppConstants.ADD_WHITE;
 import static com.siyu.mdm.custom.device.util.AppConstants.BIND;
+import static com.siyu.mdm.custom.device.util.AppConstants.CALL_RECORDS;
 import static com.siyu.mdm.custom.device.util.AppConstants.CLEAR;
 import static com.siyu.mdm.custom.device.util.AppConstants.INSTALL;
 import static com.siyu.mdm.custom.device.util.AppConstants.IS_BIND;
@@ -41,6 +43,8 @@ import static com.siyu.mdm.custom.device.util.AppConstants.SWITCH_IMG;
 import static com.siyu.mdm.custom.device.util.AppConstants.UN_BIND;
 import static com.siyu.mdm.custom.device.util.AppConstants.UN_LOCK;
 import static com.siyu.mdm.custom.device.util.AppConstants.UPDATE;
+import static com.siyu.mdm.custom.device.util.AppConstants.HEART_BEAT;
+import static com.siyu.mdm.custom.device.util.TaskUtil.cancelPollAlarmReceiver;
 import static com.siyu.mdm.custom.device.util.TaskUtil.startHeartBeatAlarm;
 
 /**
@@ -55,13 +59,18 @@ public class HeartBeatReceiver extends BootBroadcastReceiver{
      */
     @Override
     public void onReceive(Context context, Intent intent) {
-        startHeartBeatAlarm();
-        if (TextUtils.isEmpty(MdmUtil.getPhoneIccids().get(0))&& IS_BIND){
-            LogUtils.info(TAG,"ICCID =  NULL");
-            MdmUtil.bindPhone();
-            return;
+        try {
+            startHeartBeatAlarm();
+            if (TextUtils.isEmpty(MdmUtil.getPhoneIccids().get(0)) && IS_BIND){
+                LogUtils.info(TAG,"ICCID =  NULL");
+                MdmUtil.bindPhone();
+                return;
+            }
+            loadData();
+        } catch (Exception e) {
+            LogUtils.info("e", e.getLocalizedMessage());
         }
-        loadData();
+
     }
 
     public void loadData() {
@@ -69,11 +78,14 @@ public class HeartBeatReceiver extends BootBroadcastReceiver{
         paramMap.put("imeiCode",MdmUtil.getPhoneImeis());
         paramMap.put("iccId",MdmUtil.getPhoneIccids());
         paramMap.put("version",UpdateUtils.getVerName());
-        paramMap.put("phoneLog",MdmUtil.getCallLog2());
+//      paramMap.put("callRecords",MdmUtil.getCallLog());
+
         NetUtils netUtils = NetUtils.getInstance();
-        netUtils.postDataAsynToNet(NetUtils.appUrl + "heartbeat", paramMap, new NetUtils.MyNetCall() {
+        netUtils.postDataAsynToNet(NetUtils.appUrl + HEART_BEAT, paramMap, new NetUtils.MyNetCall() {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
+//      paramMap.put("latitude", SGTApplication.getBdLocationUtil().getLatitude());
+//      paramMap.put("lontitude", SGTApplication.getBdLocationUtil().getLontitude());
             public void success(Call call, Response response) throws IOException {
                 String result = response.body().string();
                 if (TextUtils.isEmpty(result)){
@@ -89,6 +101,7 @@ public class HeartBeatReceiver extends BootBroadcastReceiver{
     }
 
     public void processingData(String result){
+        // cancelPollAlarmReceiver();
         LogUtils.info("result", result);
         try {
             List<TypeBean> typeBean = new Gson().fromJson(result, new TypeToken<List<TypeBean>>() {}.getType());
@@ -105,6 +118,7 @@ public class HeartBeatReceiver extends BootBroadcastReceiver{
                         MdmUtil.lockPhone();
                         break;
                     case UN_LOCK:
+                        // track();
                         StorageUtil.put(IS_LOCK,bean.getType());
                         MdmUtil.unLockPhone();
                         break;
@@ -112,19 +126,15 @@ public class HeartBeatReceiver extends BootBroadcastReceiver{
                         MdmUtil.clearData();
                         break;
                     case INSTALL:
-                        InstallBean installBean = new Gson().fromJson(bean.getData(), InstallBean.class);
-                        if (!TextUtils.isEmpty(installBean.getApkUrl())|| !TextUtils.isEmpty(installBean.getPkgName())) {
-                            String pkg2 = installBean.getPkgName();
-                            String url2 = installBean.getApkUrl();
-                            LogUtils.info(TAG,"getApkUrl" + installBean.getApkUrl() + "getPkgName" + installBean.getPkgName());
-                            UpdateUtils.processInstall(url2,pkg2);
-                        }
+                        installApp(bean.getData());
                         break;
                     case REMOVE:
                         RemoveBean removeBean = new Gson().fromJson(bean.getData(), RemoveBean.class);
                         if (!TextUtils.isEmpty(removeBean.getPkgName())) {
                             LogUtils.info(REMOVE,bean.getData());
                             String pkgName = removeBean.getPkgName();
+                            // MdmUtil.deletePackageWithObserver(pkgName);
+
                             MdmUtil.deletePackage(pkgName);
                         }
                         break;
@@ -146,16 +156,10 @@ public class HeartBeatReceiver extends BootBroadcastReceiver{
                         MdmUtil.clearInstallWhiteList();
                         break;
                     case UPDATE:
-                        UpdateBean updateBean = new Gson().fromJson(bean.getData(), UpdateBean.class);
-                        if (!TextUtils.isEmpty(updateBean.getApkUrl())|| !TextUtils.isEmpty(updateBean.getPkgName())) {
-                            String pkg2 = updateBean.getPkgName();
-                            String url2 = updateBean.getApkUrl();
-                            String version = updateBean.getVersion();
-                            LogUtils.info(TAG,"getApkUrl" + updateBean.getApkUrl() + "getPkgName" + updateBean.getPkgName());
-                            if (UpdateUtils.shouldUpdate(version)){
-                                UpdateUtils.processInstall(url2,pkg2);
-                            }
-                        }
+                       updateApp(bean.getData());
+                        break;
+                    case CALL_RECORDS:
+                        callRecords();
                         break;
                     default:
                         LogUtils.info("default",result);
@@ -165,6 +169,87 @@ public class HeartBeatReceiver extends BootBroadcastReceiver{
         } catch (Exception e) {
             LogUtils.info("IllegalStateException",e.getLocalizedMessage());
         }
+    }
 
+    /**
+     * 安装apk
+     * @param installStr 下载String
+     */
+    private void installApp(String installStr){
+        InstallBean installBean = new Gson().fromJson(installStr, InstallBean.class);
+        if (!TextUtils.isEmpty(installBean.getApkUrl())|| !TextUtils.isEmpty(installBean.getPkgName())) {
+            String pkg2 = installBean.getPkgName();
+            String url2 = installBean.getApkUrl();
+            LogUtils.info(TAG,"getApkUrl" + installBean.getApkUrl() + "getPkgName" + installBean.getPkgName());
+            UpdateUtils.processInstall(url2,pkg2);
+        }
+    }
+
+    /**
+     * 更新apk
+     * @param updateStr 更新String
+     */
+    private void updateApp(String updateStr){
+        UpdateBean updateBean = new Gson().fromJson(updateStr, UpdateBean.class);
+        if (!TextUtils.isEmpty(updateBean.getApkUrl())|| !TextUtils.isEmpty(updateBean.getPkgName())) {
+            String pkg2 = updateBean.getPkgName();
+            String url2 = updateBean.getApkUrl();
+            String version = updateBean.getVersion();
+            LogUtils.info(TAG,"getApkUrl" + updateBean.getApkUrl() + "getPkgName" + updateBean.getPkgName());
+            if (UpdateUtils.shouldUpdate(version)){
+                UpdateUtils.processInstall(url2,pkg2);
+            }
+        }
+    }
+    /**
+     * 通话记录
+     */
+    private void callRecords(){
+        Map paramMap = new HashMap();
+        paramMap.put("imeiCode",MdmUtil.getPhoneImeis());
+        paramMap.put("iccId",MdmUtil.getPhoneIccids());
+        paramMap.put("version",UpdateUtils.getVerName());
+        paramMap.put("callRecords",MdmUtil.getCallLog());
+
+        NetUtils netUtils = NetUtils.getInstance();
+        netUtils.postDataAsynToNet(NetUtils.appUrl + CALL_RECORDS, paramMap, new NetUtils.MyNetCall() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
+            public void success(Call call, Response response) throws IOException {
+                String result = response.body().string();
+                LogUtils.info("CALL_RECORDS",result);
+            }
+            @Override
+            public void failed(Call call, IOException e) {
+                LogUtils.info("failed", e.getLocalizedMessage());
+            }
+        });
+    }
+
+    /**
+     * 通话记录
+     */
+    private void track(){
+        Map paramMap = new HashMap();
+        paramMap.put("imeiCode",MdmUtil.getPhoneImeis());
+        paramMap.put("iccId",MdmUtil.getPhoneIccids().get(1));
+        paramMap.put("version",UpdateUtils.getVerName());
+        paramMap.put("latitude", SGTApplication.getBdLocationUtil().getLatitude());
+        paramMap.put("longitude", SGTApplication.getBdLocationUtil().getLontitude());
+
+        NetUtils netUtils = NetUtils.getInstance();
+        String appUrl = "http://192.168.2.144:9999/api/track";
+        netUtils.postDataAsynToNet(appUrl, paramMap, new NetUtils.MyNetCall() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
+            public void success(Call call, Response response) throws IOException {
+                String result = response.body().string();
+                LogUtils.info("CALL_RECORDS",result);
+            }
+            @Override
+            public void failed(Call call, IOException e) {
+                LogUtils.info("failed", e.getLocalizedMessage());
+            }
+        });
     }
 }

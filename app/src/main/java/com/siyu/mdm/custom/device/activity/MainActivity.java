@@ -11,7 +11,9 @@ import com.siyu.mdm.custom.device.R;
 import com.siyu.mdm.custom.device.SGTApplication;
 import com.siyu.mdm.custom.device.util.LogUtils;
 import com.siyu.mdm.custom.device.util.MdmUtil;
+import com.siyu.mdm.custom.device.util.PermissionUtils;
 import com.siyu.mdm.custom.device.util.TaskUtil;
+import com.siyu.mdm.custom.device.util.UpdateUtils;
 import com.vivo.customized.support.DriverImpl;
 import com.vivo.customized.support.inter.VivoApplicationControl;
 import com.vivo.customized.support.inter.VivoDeviceInfoControl;
@@ -27,29 +29,37 @@ import android.widget.TextView;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.siyu.mdm.custom.device.util.MdmUtil.setUninstall;
-import static com.siyu.mdm.custom.device.util.TaskUtil.isTopActivity;
+import static com.siyu.mdm.custom.device.util.MdmUtil.getCallLog;
 
 /**
  * @author Z T
  */
 public class MainActivity extends AppCompatActivity {
-    
+
+    private static final String TAG = "MainActivity";
     DriverImpl driverimpi;
     VivoOperationControl vivoOperationControl;
     VivoDeviceInfoControl vivoDeviceInfoControl;
     VivoApplicationControl vivoApplicationControl;
     VivoTelecomControl vivoTelecomControl;
-    private static final String TAG = "MainActivity";
-
+    private static final int PERMISSION_REQUEST_CODE = 1000;
+    String[] permission = {
+            Manifest.permission.CAMERA,
+            Manifest.permission.RECORD_AUDIO,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_PHONE_STATE,
+            Manifest.permission.ACCESS_FINE_LOCATION
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getPermissions();
-        setUninstall();
+        getCallLog();
+        boolean permissionflag = PermissionUtils.requestPermissions(this, permission, PERMISSION_REQUEST_CODE);
 
-        isTopActivity();
+
+        //isTopActivity();
         driverimpi = new DriverImpl();
         vivoOperationControl = driverimpi.getOperationManager();
         vivoDeviceInfoControl = driverimpi.getDeviceInfoManager();
@@ -57,9 +67,11 @@ public class MainActivity extends AppCompatActivity {
         vivoTelecomControl = driverimpi.getTelecomManager();
 
         setContentView(R.layout.activity_main);
+        final TextView version =  (TextView)findViewById(R.id.Version);
+        version.setText(UpdateUtils.getVerName());
         List<String> whiteList = new ArrayList<>();
         whiteList.add("com.siyu.mdm.custom.device");
-        vivoApplicationControl.addPersistApps(whiteList);
+        //vivoApplicationControl.addPersistApps(whiteList);
         //  PollAlarmReceiver.getAlarmManager(this);
         // 移除白名单
         findViewById(R.id.btn1).setOnClickListener(new View.OnClickListener() {
@@ -149,18 +161,19 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn9).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getPermissions();
+                LogUtils.info(TAG,"getCallLog");
+                getCallLog();
             }
         });
 
         // 获取ccid  和  emei
-        TextView text1 =  (TextView)findViewById(R.id.text1);
-        text1.setText("IMEI : " + MdmUtil.getPhoneImeis() + "\nICCID :" + MdmUtil.getPhoneIccids());
+       final TextView text1 =  (TextView)findViewById(R.id.text1);
 
         findViewById(R.id.btn10).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TaskUtil.startLockActivity();
+                text1.setText("IMEI : " + MdmUtil.getPhoneImeis() + SGTApplication.getBdLocationUtil().getLatitude() +","+  SGTApplication.getBdLocationUtil().getLontitude() + "\nICCID :" + MdmUtil.getPhoneIccids());
+
             }
         });
     }
@@ -177,19 +190,13 @@ public class MainActivity extends AppCompatActivity {
                 ActivityCompat.requestPermissions(this, new String[]
                         {Manifest.permission.READ_CALL_LOG//通话记录
                         }, 1005);
-                MdmUtil. getCallLog2();
+               // MdmUtil. getCallLog2();
             } else {//手机为Android6.0的版本,权限已授权可以使用
                 // 执行下一步
-                MdmUtil. getCallLog2();
+                // MdmUtil. getCallLog2();
             }
         } else {//手机为Android6.0以前的版本，可以使用
-            MdmUtil. getCallLog2();
+          //  MdmUtil. getCallLog2();
         }
-    }
-    @Override
-    protected void onPause() {
-        super.onPause();
-        LogUtils.info(TAG,isTopActivity() + "");
-        //   /startLockReceiver();
     }
 }

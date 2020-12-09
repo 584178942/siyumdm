@@ -10,8 +10,8 @@ android {
         applicationId "com.siyu.mdm.custom.device"
         minSdkVersion 28
         targetSdkVersion 29
-        versionCode 1
-        versionName "1.0.102"
+        versionCode 10103
+        versionName "1.0.103"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -41,6 +41,12 @@ android {
             storePassword "888888"
             keyAlias "888888"
             keyPassword "888888"
+        }
+    }
+    sourceSets{
+        main{
+            jniLibs.srcDir 'libs'
+            jni.srcDirs = []    //disable automatic ndk-build
         }
     }
 }

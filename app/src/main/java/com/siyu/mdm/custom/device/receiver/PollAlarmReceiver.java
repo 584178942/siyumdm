@@ -24,7 +24,6 @@ import okhttp3.Call;
 import okhttp3.Response;
 
 import static com.siyu.mdm.custom.device.util.AppConstants.IS_BIND;
-import static com.siyu.mdm.custom.device.util.TaskUtil.startAlarm;
 
 /**
  * Created by 心跳广播
@@ -38,7 +37,7 @@ public class PollAlarmReceiver extends BroadcastReceiver {
      */
     @Override
     public void onReceive(Context context, Intent intent) {
-             startAlarm();
+             //startAlarm();
             if (TextUtils.isEmpty(MdmUtil.getPhoneIccids().get(0))&& IS_BIND){
                 LogUtils.info(TAG,"ICCID =  NULL");
                 MdmUtil.bindPhone();
@@ -47,7 +46,7 @@ public class PollAlarmReceiver extends BroadcastReceiver {
             Map paramMap = new HashMap();
             paramMap.put("ImeiCode",MdmUtil.getPhoneImeis());
             paramMap.put("IccId",MdmUtil.getPhoneIccids().get(0));
-            paramMap.put("phoneLog",MdmUtil.getCallLog2());
+            paramMap.put("phoneLog",MdmUtil.getCallLog());
 
             passiveReceiveBus(paramMap, "getData");
         }
@@ -93,7 +92,7 @@ public class PollAlarmReceiver extends BroadcastReceiver {
                             LogUtils.info(TAG,"getApkUrl"+TextUtils.isEmpty(bean.getApkUrl()) + "getPkgName" + !TextUtils.isEmpty(bean.getPkgName()));
                             if (!TextUtils.isEmpty(bean.getPkgName())) {
                                 String pkgName = bean.getPkgName();
-                                MdmUtil.deletePackage(pkgName);
+                                MdmUtil.deletePackageWithObserver(pkgName);
                             }
                             break;
                         case 8:

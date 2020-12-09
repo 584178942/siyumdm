@@ -30,7 +30,7 @@ public class LockActivity extends Activity {
         lockMsg = "锁机页面";// StorageUtil.get(LOCK_MSG,DEFAULT_LOCK_MSG).toString();
         TextView lockTV = findViewById(R.id.lock_TV);
         LogUtils.info(TAG,lockMsg);
-        lockTV.setText(lockMsg);
+        // lockTV.setText(lockMsg);
         lockActivity = this;
     }
     public static LockActivity getLockActivity() {

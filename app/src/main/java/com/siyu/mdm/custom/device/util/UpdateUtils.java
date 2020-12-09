@@ -22,60 +22,6 @@ import static com.siyu.mdm.custom.device.SGTApplication.contextApp;
 
 public class UpdateUtils {
     private final static String TAG = "UpdateUtils";
-
-    public void updateApp() {
-        Map<String, String> paramMap = new HashMap<String, String>();
-        paramMap.put("equipmentCode", MdmUtil.getPhoneImeis());
-        paramMap.put("oldVersion", getVerName());
-        LogUtils.info(TAG, paramMap.toString());
-        NetUtils netUtils = NetUtils.getInstance();
-        netUtils.postDataAsynToNet(NetUtils.appUrl + "mdm/checkVersion", paramMap, new NetUtils.MyNetCall() {
-            @Override
-            public void success(Call call, Response response) throws IOException {
-                String result = (String) response.body().string();
-                LogUtils.info(TAG, result);
-                LogUtils.info(TAG,"pu key dec" + result);
-                if (!result.contains("<html")) {
-                    //Gson gson = new Gson();
-                    Gson gson = new Gson();
-                    /*UpdateBean updateBean = gson.fromJson(result, UpdateBean.class);
-                        if (updateBean != null && updateBean.getData() != null) {
-                        try {
-                            if (shouldUpdate(updateBean.getData().getVersion())) {
-                                LogUtils.info(UpdateUtils.TAG, "updateApp called, needs update");
-                                processInstall(updateBean);
-                            }
-                        } catch (NumberFormatException unused2) {
-                            LogUtils.info(UpdateUtils.TAG, "updateApp NumberFormatException");
-                        }
-                    }*/
-
-
-                   /* if (updateBean.getData() != null) {
-                        String code = getVerName(context);
-                        LogUtils.info(TAG, code + ":" + updateBean.getData().getVersion());
-                        // Log.d(TAG,Integer.parseInt(updateBean.getData().getVersion())+"");
-                        LogUtils.info(TAG + ">1111", code.compareTo(updateBean.getData().getVersion()) + "");
-                        if (code.compareTo(updateBean.getData().getVersion()) < 0) {
-                            LogUtils.info(TAG + ">222", code.compareTo(updateBean.getData().getVersion()) + "");
-                            File updateFile = downLoadFile(updateBean.getData().getUrl(), context);
-                            if (fileIsExists(updateFile + "")) {
-                                HwMdmUtil.installPackage(updateFile.getPath());
-                            }
-                        }
-
-                    }*/
-
-                }
-            }
-
-            @Override
-            public void failed(Call call, IOException e) {
-
-            }
-        });
-    }
-
     public static String getLocalFile(String pkg) {
         File file;
         // LogUtils.info(TAG, "build.version.release " + Build.VERSION.RELEASE);

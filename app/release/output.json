@@ -11,10 +11,10 @@
       "type": "SINGLE",
       "filters": [],
       "properties": [],
-      "versionCode": 1,
-      "versionName": "1",
+      "versionCode": 10103,
+      "versionName": "10103",
       "enabled": true,
-      "outputFile": "com.siyu.mdm.custom.device-1-1.0.102-20201113.apk"
+      "outputFile": "com.siyu.mdm.custom.device-10103-1.0.103-20201207.apk"
     }
   ]
 }

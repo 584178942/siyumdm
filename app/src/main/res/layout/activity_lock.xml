@@ -22,7 +22,7 @@
             android:gravity="center"
             android:text="终端强制锁定，如需解锁请与管理员联系"
             android:textColor="#ffffff"
-            android:textSize="14sp"
+            android:textSize="24sp"
             android:padding="10dp" />
     </LinearLayout>
 </LinearLayout>

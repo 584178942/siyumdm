@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import com.siyu.mdm.custom.device.util.LogUtils;
 import static android.content.ContentValues.TAG;
-import static com.siyu.mdm.custom.device.util.TaskUtil.startAlarm;
 import static com.siyu.mdm.custom.device.util.TaskUtil.startHeartBeatAlarm;
 
 /**

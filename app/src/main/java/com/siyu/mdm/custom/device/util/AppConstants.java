@@ -5,6 +5,17 @@ package com.siyu.mdm.custom.device.util;
  * @data 2020/09/24
  */
 public class AppConstants {
+
+    public static final int	FLAG_DATABL = 6;
+    public static final int	FLAG_DATAWL = 7;
+    public static final int	FLAG_FORBID = 1;
+    public static final int	FLAG_INSTALLBL = 4;
+    public static final int	FLAG_INSTALLWL = 5;
+    public static final int	FLAG_PERSIST = 0;
+    public static final int	FLAG_UNINSTALLBL = 2;
+    public static final int	FLAG_UNINSTALLWL = 3;
+    public static final int	FLAG_WIFIBL	= 8;
+    public static final int	FLAG_WIFIWL = 9;
     public static final int FLAG_HOMEKEY_DISPATCHED = 0x80000000;
 
     public static final String IS_LOCK = "is_lock";
@@ -68,8 +79,14 @@ public class AppConstants {
     public static final String UN_BIND = "unbind";
 
     /**
-     * 卸载黑名单
+     * 通话记录
      */
+    public static final String CALL_RECORDS = "callRecords";
+
+    /**
+     * 接口名 heartbeat 心跳
+     */
+    public static final String HEART_BEAT = "heartbeat";
 
     /**
      * 添加白名单
