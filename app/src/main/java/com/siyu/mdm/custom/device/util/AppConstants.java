@@ -1,10 +1,14 @@
-package com.siyu.mdm.custom.device.util;
+ package com.siyu.mdm.custom.device.util;
 
 /**
  * @author ZT
  * @data 2020/09/24
  */
 public class AppConstants {
+    /**
+     * true 测试环境  false 正式环境
+     */
+    public static final Boolean IS_TEST = true;
 
     public static final int	FLAG_DATABL = 6;
     public static final int	FLAG_DATAWL = 7;

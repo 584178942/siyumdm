@@ -166,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // 获取ccid  和  emei
+        // 获取ccid 和 emei
        final TextView text1 =  (TextView)findViewById(R.id.text1);
 
         findViewById(R.id.btn10).setOnClickListener(new View.OnClickListener() {

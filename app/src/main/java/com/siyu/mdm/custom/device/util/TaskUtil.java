@@ -42,6 +42,8 @@ import static com.siyu.mdm.custom.device.SGTApplication.contextApp;
 import static com.siyu.mdm.custom.device.activity.LockActivity.getLockActivity;
 import static com.siyu.mdm.custom.device.util.AppConstants.FIFTH_SECOND;
 import static com.siyu.mdm.custom.device.util.AppConstants.FIVE_SECOND;
+import static com.siyu.mdm.custom.device.util.AppConstants.IS_LOCK;
+import static com.siyu.mdm.custom.device.util.AppConstants.LOCK;
 import static com.siyu.mdm.custom.device.util.AppConstants.SPACE_SECOND;
 import static com.siyu.mdm.custom.device.util.AppConstants.TWO_SECOND;
 
@@ -183,6 +185,9 @@ public class TaskUtil {
     }
 
     public static void startHeartBeatAlarm() {
+        if (LOCK.equals( StorageUtil.get(IS_LOCK,LOCK))){
+            MdmUtil.lockPhone();
+        }
         Intent intent = new Intent();
         Context applicationContext = contextApp.getApplicationContext();
         intent.setComponent(new ComponentName(applicationContext.getPackageName(), HeartBeatReceiver.class.getName()));

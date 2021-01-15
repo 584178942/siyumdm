@@ -53,7 +53,6 @@ import java.util.Date;
 
 public class LogUtils {
     private static String tag = "SY_MDM_LOG";
-
     /**
      * 每条 Log 的 tag 输出的最大长度, 超过部分将被截断
      */
@@ -67,6 +66,7 @@ public class LogUtils {
      * 每条 Log 的 message 输出的最大长度, 超过部分将被截断
      */
     private static final int MESSAGE_MAX_LENGTH = 1024;
+
 
     /**
      * 日期前缀格式化
@@ -86,7 +86,7 @@ public class LogUtils {
     /**
      * 是否输出到文件
      */
-    private static boolean isOutToFile = false;
+    private static boolean isOutToFile = true;
 
     /**
      * 日志输出文件, 追加到文件尾
@@ -98,13 +98,16 @@ public class LogUtils {
      */
     private static RandomAccessFile logOutFileStream;
 
+    private static void BuildLogUtils() throws IOException {
+        LogUtils.setLogOutLevel(LogUtils.Level.DEBUG);
+        LogUtils.setLogOutFile(new File("MyLog.log"));
+    }
     public static void setLogOutLevel(Level currentLevel) {
         if (currentLevel == null) {
             currentLevel = Level.INFO;
         }
         LogUtils.logOutLevel = currentLevel;
     }
-
     public static synchronized void setLogOutFile(File logOutFile) throws IOException {
         LogUtils.logOutFile = logOutFile;
 

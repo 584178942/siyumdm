@@ -20,7 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="终端强制锁定，如需解锁请与管理员联系"
+            android:text="终端强制机卡绑定，如需解锁请与管理员联系"
             android:textColor="#ffffff"
             android:textSize="24sp"
             android:padding="10dp" />

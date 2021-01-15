@@ -3,7 +3,6 @@ package com.siyu.mdm.custom.device.util;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
 /**
  * @author ZT
  * @date 20201126
@@ -42,7 +41,8 @@ public class DateUtils {
      *
      * @param str1 the first date
      * @param str2 the second date
-     * @return true <br/>false
+     * @return true <br/>
+     * false
      */
     public static boolean isDate2Bigger(String str1, String str2) {
         boolean isBigger = false;

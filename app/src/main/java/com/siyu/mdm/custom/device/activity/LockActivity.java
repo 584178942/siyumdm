@@ -27,10 +27,10 @@ public class LockActivity extends Activity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
                 | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
         setContentView(R.layout.activity_lock);
-        lockMsg = "锁机页面";// StorageUtil.get(LOCK_MSG,DEFAULT_LOCK_MSG).toString();
+        lockMsg = "终端强制锁定，如需解锁请与管理员联系";// StorageUtil.get(LOCK_MSG,DEFAULT_LOCK_MSG).toString();
         TextView lockTV = findViewById(R.id.lock_TV);
         LogUtils.info(TAG,lockMsg);
-        // lockTV.setText(lockMsg);
+        lockTV.setText(lockMsg);
         lockActivity = this;
     }
     public static LockActivity getLockActivity() {

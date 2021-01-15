@@ -53,8 +53,8 @@ public class MdmUtil {
         try {
             Class vcs = Class.forName("com.vivo.services.cust.VivoCustomManager");
             Method clearData = vcs.getDeclaredMethod("clearData");
-            clearData.invoke(vcs.newInstance());}
-        catch (Exception e) {
+            clearData.invoke(vcs.newInstance());
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -62,7 +62,6 @@ public class MdmUtil {
      * 获取通话时长
      */
     public static List getCallLog() {
-
         List<Map<String,Object>> list = new ArrayList<>();
         Map<String,Object> map;
         Cursor cursor = SGTApplication.getContextApp().getApplicationContext().getContentResolver().query(CallLog.Calls.CONTENT_URI,
@@ -101,12 +100,16 @@ public class MdmUtil {
      * 机卡绑定
      */
     public static void bindPhone(){
-        try{
+        try {
             int i = 0;
             vivoTelecomControl.setTelephonyPhoneState(i,i,i);
             vivoTelecomControl.setTelephonySmsState(i,i,i);
+            vivoOperationControl.setBackKeyEventState(i);
+            vivoOperationControl.setMenuKeyEventState(i);
+            vivoOperationControl.setHomeKeyEventState(i);
+            vivoOperationControl.setStatusBarState(i);
             TaskUtil.startBindActivity();
-        }catch (Exception e){
+        } catch (Exception e) {
             LogUtils.info(TAG + "bindPhone",e.getLocalizedMessage());
         }
 
@@ -118,12 +121,16 @@ public class MdmUtil {
     public static void unBindPhone(){
         try {
             int i = 0;
-            vivoTelecomControl.setTelephonyPhoneState(i,1,1);
-            vivoTelecomControl.setTelephonySmsState(i,1,1);
-            // vivoTelecomControl.setTelephonySlotState(0);
+            int k = 1;
+            vivoTelecomControl.setTelephonyPhoneState(i,k,k);
+            vivoTelecomControl.setTelephonySmsState(i,k,k);
+            vivoOperationControl.setBackKeyEventState(k);
+            vivoOperationControl.setMenuKeyEventState(k);
+            vivoOperationControl.setHomeKeyEventState(k);
+            vivoOperationControl.setStatusBarState(k);
             TaskUtil.closeBindActivity();
             // TaskUtil.startLockActivity();
-        }catch (Exception e){
+        } catch (Exception e) {
             LogUtils.info(TAG + "unBindPhone",e.getLocalizedMessage());
         }
     }
@@ -145,11 +152,9 @@ public class MdmUtil {
             LogUtils.info(TAG + "lockPhone",e.getLocalizedMessage());
         }
     }
+
     /**
-     * 锁机
-     */
-    /**
-     * 机卡绑定
+     * 解锁
      */
     public static void unLockPhone(){
         try {
@@ -168,6 +173,7 @@ public class MdmUtil {
 
     /**
      * 添加安装应用白名单
+     * @param pkgList 包名List
      */
     public static void addInstallWhiteList(List<String> pkgList){
         try {
@@ -206,18 +212,6 @@ public class MdmUtil {
             LogUtils.info(TAG + "clearInstallWhiteList",e.getLocalizedMessage());
         }
     }
-    //判断文件是否存在
-    public static boolean fileIsExists(String filePath) {
-        try {
-            File f = new File(filePath);
-            if(!f.exists()) {
-                return false;
-            }
-        } catch (Exception e) {
-            return false;
-        }
-        return true;
-    }
 
     /**
      * 获取IccId
@@ -242,8 +236,11 @@ public class MdmUtil {
             return null;
         }
     }
+
     /**
      * 静默安装
+     * @param path 安装路径
+     * @param pkg 包名
      */
     public static void installPackage(final String path, String pkg){
         try{
@@ -277,8 +274,10 @@ public class MdmUtil {
             LogUtils.info(TAG + "installPackage",e.getLocalizedMessage());
         }
     }
+
     /**
      * 静默卸载
+     * @param pkgName 包名
      */
     public static void deletePackageWithObserver(String pkgName){
         try{
@@ -297,6 +296,7 @@ public class MdmUtil {
 
     /**
      * 静默卸载 deletePackage
+     * @param pkgName 包名
      */
     public static void deletePackage(String pkgName){
         try{

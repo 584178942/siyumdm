@@ -3,15 +3,12 @@ package com.siyu.mdm.custom.device.util;
 import com.google.gson.Gson;
 import com.siyu.mdm.custom.device.R;
 import com.siyu.mdm.custom.device.SGTApplication;
-
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSession;
-
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -20,18 +17,25 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import static com.siyu.mdm.custom.device.util.AppConstants.IS_TEST;
+
 /**
  * @author Z T
  * @date 20200925
  */
 public class NetUtils {
+
     private static final String TAG = "NetUtils";
-    public static String appUrl = SGTApplication.getContextApp().getString(R.string.api_urlTest);
+    public static String appUrl = "";
     private static final byte[] LOCKER = new byte[0];
     private static NetUtils mInstance;
     private OkHttpClient mOkHttpClient;
-
     private NetUtils() {
+        if (IS_TEST){
+            appUrl = SGTApplication.getContextApp().getString(R.string.api_urlTest);
+        } else {
+            appUrl = SGTApplication.getContextApp().getString(R.string.api_url);
+        }
         OkHttpClient.Builder ClientBuilder = new OkHttpClient.Builder();
         ClientBuilder.readTimeout(20, TimeUnit.SECONDS);
         ClientBuilder.connectTimeout(6, TimeUnit.SECONDS);

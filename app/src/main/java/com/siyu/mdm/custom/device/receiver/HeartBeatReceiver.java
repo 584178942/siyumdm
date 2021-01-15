@@ -108,10 +108,14 @@ public class HeartBeatReceiver extends BootBroadcastReceiver{
             for (TypeBean bean : typeBean) {
                 switch (bean.getType()) {
                     case BIND:
-                        MdmUtil.bindPhone();
+                        if (!LOCK.equals( StorageUtil.get(IS_LOCK,LOCK))){
+                            MdmUtil.bindPhone();
+                        }
                         break;
                     case UN_BIND:
-                        MdmUtil.unBindPhone();
+                        if (!LOCK.equals( StorageUtil.get(IS_LOCK,LOCK))) {
+                            MdmUtil.unBindPhone();
+                        }
                         break;
                     case LOCK:
                         StorageUtil.put(IS_LOCK,bean.getType());
