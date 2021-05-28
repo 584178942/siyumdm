@@ -70,7 +70,6 @@ public class HeartBeatReceiver extends BootBroadcastReceiver{
         } catch (Exception e) {
             LogUtils.info("e", e.getLocalizedMessage());
         }
-
     }
 
     public void loadData() {

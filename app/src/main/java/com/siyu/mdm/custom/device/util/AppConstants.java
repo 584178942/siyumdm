@@ -8,7 +8,7 @@ public class AppConstants {
     /**
      * true 测试环境  false 正式环境
      */
-    public static final Boolean IS_TEST = true;
+    public static final Boolean IS_TEST = false;
 
     public static final int	FLAG_DATABL = 6;
     public static final int	FLAG_DATAWL = 7;

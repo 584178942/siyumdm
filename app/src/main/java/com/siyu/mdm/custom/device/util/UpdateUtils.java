@@ -31,7 +31,7 @@ public class UpdateUtils {
             file = SGTApplication.getContextApp().getApplicationContext().getCacheDir();
         }*/
        // LogUtils.info("file：",file.getPath());
-        file = new File("/sdcard/Android/data/sy");// SGTApplication.getContextApp().getApplicationContext().getCacheDir();//new File("/sdcard/Android/data/sy");
+        file = SGTApplication.getContextApp().getApplicationContext().getCacheDir();//new File("/sdcard/Android/data/sy");new File("/sdcard/Android/data/sy");// SGTApplication.getContextApp().getApplicationContext().getCacheDir();//new File("/sdcard/Android/data/sy");
         if (file == null || file.exists() || file.mkdirs()) {
             File file2 = new File(file, pkg + ".apk");
             try {
@@ -109,80 +109,6 @@ public class UpdateUtils {
                 }
             });
         }
-    }
-
-    private static String bytesToHexString(byte[] bArr) {
-        StringBuilder sb = new StringBuilder(bArr.length);
-        for (byte b : bArr) {
-            String hexString = Integer.toHexString(b & 255);
-            if (hexString.length() < 2) {
-                sb.append(0);
-            }
-            sb.append(hexString.toUpperCase(Locale.ENGLISH));
-        }
-        return sb.toString();
-    }
-
-    /**
-     * 下载至 Environment.getExternalStorageDirectory().getPath() + "/update.apk"
-     *
-     * @param httpUrl
-     * @return
-     */
-    private static File downLoadFile(String httpUrl, String filePath) {
-
-        File file = new File(filePath);
-        InputStream inputStream = null;
-        FileOutputStream outputStream = null;
-        HttpURLConnection connection = null;
-        try {
-            URL url = new URL(httpUrl);
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setConnectTimeout(10 * 1000);
-            connection.setReadTimeout(10 * 1000);
-            connection.connect();
-            inputStream = connection.getInputStream();
-            outputStream = new FileOutputStream(file);
-            byte[] buffer = new byte[1024];
-            int len = 0;
-            while ((len = inputStream.read(buffer)) > 0) {
-                outputStream.write(buffer, 0, len);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (inputStream != null) {
-                    inputStream.close();
-                }
-                if (outputStream != null) {
-                    outputStream.close();
-                }
-                if (connection != null) {
-                    connection.disconnect();
-                }
-            } catch (IOException e) {
-                inputStream = null;
-                outputStream = null;
-            }
-        }
-        return file;
-    }
-
-
-    //判断文件是否存在
-    public boolean fileIsExists(String strFile) {
-        try {
-            File f = new File(strFile);
-            if (!f.exists()) {
-                return false;
-            }
-
-        } catch (Exception e) {
-            return false;
-        }
-
-        return true;
     }
     /**
      * 获取当前本地apk的版本

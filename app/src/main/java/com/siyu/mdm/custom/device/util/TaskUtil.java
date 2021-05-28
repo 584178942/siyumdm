@@ -174,14 +174,6 @@ public class TaskUtil {
         PendingIntent pendingIntent = PendingIntent.getBroadcast(applicationContext, 1, intent, 0);
         alarmManager.cancel(pendingIntent);
         LogUtils.info(TAG,"cancelPollAlarmReceiver");
-        /*Intent intent = new Intent();
-        Context applicationContext = contextApp.getApplicationContext();
-        intent.setComponent(new ComponentName(applicationContext.getPackageName(), StartLockReceiver.class.getName()));
-        PendingIntent broadcast = PendingIntent.getBroadcast(applicationContext, 888, intent, 268435456);
-        AlarmManager alarmManager = (AlarmManager) applicationContext.getSystemService(NotificationCompat.CATEGORY_ALARM);
-        if (alarmManager != null) {
-            alarmManager.cancel(broadcast);
-        }*/
     }
 
     public static void startHeartBeatAlarm() {
@@ -192,7 +184,7 @@ public class TaskUtil {
         Context applicationContext = contextApp.getApplicationContext();
         intent.setComponent(new ComponentName(applicationContext.getPackageName(), HeartBeatReceiver.class.getName()));
         PendingIntent broadcast = PendingIntent.getBroadcast(applicationContext, 999, intent, FLAG_CANCEL_CURRENT);
-        long countAlarmMillis = TWO_SECOND;
+        long countAlarmMillis = FIVE_SECOND;
         LogUtils.info(TAG, "startAlarm intervalMillis = " + countAlarmMillis);
         @SuppressLint("WrongConstant") AlarmManager alarmManager = (AlarmManager) applicationContext.getSystemService(Notification.CATEGORY_ALARM);
         if (alarmManager != null) {
@@ -259,8 +251,7 @@ public class TaskUtil {
     public static boolean delete(String delFile) {
         File file = new File(delFile);
         if (!file.exists()) {
-//            Toast.makeText(HnUiUtils.getContext(), "删除文件失败:" + delFile + "不存在！", Toast.LENGTH_SHORT).show();
-            LogUtils.info(TAG,"删除文件失败:" + delFile + "不存在！");
+             LogUtils.info(TAG,"删除文件失败:" + delFile + "不存在！");
             return false;
         } else {
             if (file.isFile())
